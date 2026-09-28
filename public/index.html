@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafe Nilgiri · Coimbatore</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="28" height="28"><path d="M4 24 L12 10 L17 18 L21 12 L28 24 Z" fill="currentColor"/><circle cx="23" cy="8" r="3" fill="currentColor" opacity=".55"/></svg>
+        </span>
+        Cafe Nilgiri
+      </a>
+      <nav>
+        <a href="#menu">Menu</a>
+        <a href="#track">Track order</a>
+        <a href="#book">Book a table</a>
+        <a href="#devlog">Behind the scenes</a>
+        <a href="lab.html">Agent Lab</a>
+      </nav>
+      <span id="modeBadge" class="badge">checking…</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <p class="eyebrow">Race Course Road · Coimbatore</p>
+        <h1>Filter coffee, millet food and a table with a view of the hills.</h1>
+        <p class="lead">This is a demo website for the workshop <b>AI Agents and Backend Integration for Websites</b>.
+          Every section below talks to a real Python backend. The chat assistant in the corner is an <b>AI agent</b>
+          that uses the very same backend through <b>tools</b>.</p>
+        <div class="hero-actions">
+          <button class="btn primary" onclick="Chat.open()">Chat with Nila</button>
+          <a class="btn ghost" href="#devlog">See the API calls</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-hidden="true">
+        <div class="arch">
+          <div class="node">Browser<br><small>HTML + JS</small></div>
+          <div class="arrow">⇄ JSON</div>
+          <div class="node strong">Backend<br><small>server.py</small></div>
+          <div class="arrow">⇄</div>
+          <div class="split">
+            <div class="node">Database<br><small>SQLite</small></div>
+            <div class="node accent">LLM<br><small>tool calls</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <!-- MENU -->
+    <section id="menu" class="panel">
+      <div class="panel-head">
+        <h2>Menu</h2>
+        <code class="endpoint">GET /api/menu</code>
+      </div>
+      <form id="menuForm" class="row">
+        <input id="menuQuery" type="search" placeholder="Search e.g. biryani, coffee">
+        <input id="menuMax" type="number" min="0" step="10" placeholder="Max price (Rs)">
+        <label class="check"><input id="menuVeg" type="checkbox"> Veg only</label>
+        <button class="btn primary" type="submit">Search</button>
+      </form>
+      <div id="menuGrid" class="menu-grid"></div>
+    </section>
+
+    <div class="two-col">
+      <!-- TRACK ORDER -->
+      <section id="track" class="panel">
+        <div class="panel-head">
+          <h2>Track your order</h2>
+          <code class="endpoint">GET /api/orders/&lt;id&gt;</code>
+        </div>
+        <form id="trackForm" class="row">
+          <input id="orderId" placeholder="Order ID, e.g. 1022" required>
+          <button class="btn primary" type="submit">Track</button>
+        </form>
+        <p class="hint">Try 1021, 1022, 1023, 1024 or 9999.</p>
+        <div id="trackResult" class="result" hidden></div>
+      </section>
+
+      <!-- BOOK -->
+      <section id="book" class="panel">
+        <div class="panel-head">
+          <h2>Book a table</h2>
+          <code class="endpoint">POST /api/bookings</code>
+        </div>
+        <form id="bookForm" class="grid-form">
+          <label>Name<input name="name" required></label>
+          <label>Phone<input name="phone" required placeholder="10 digits"></label>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Time
+            <select name="time" required>
+              <option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option>
+              <option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option>
+              <option selected>19:00</option><option>20:00</option><option>21:00</option>
+            </select>
+          </label>
+          <label>Guests<input name="party_size" type="number" min="1" max="8" value="2" required></label>
+          <button class="btn primary" type="submit">Book</button>
+        </form>
+        <div id="bookResult" class="result" hidden></div>
+      </section>
+    </div>
+
+    <!-- DEV LOG -->
+    <section id="devlog" class="panel">
+      <div class="panel-head">
+        <h2>Behind the scenes</h2>
+        <span class="hint">Every request this page makes to the backend</span>
+      </div>
+      <table class="log">
+        <thead><tr><th>Method</th><th>URL</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    Workshop demo · Cafe Nilgiri is a fictional business · Built with Python (standard library), SQLite and plain JavaScript.
+  </footer>
+
+  <!-- CHAT WIDGET -->
+  <button id="chatFab" class="chat-fab" onclick="Chat.toggle()" aria-label="Open chat">
+    <svg viewBox="0 0 24 24" width="26" height="26"><path d="M4 5h16v11H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+  </button>
+  <aside id="chat" class="chat" hidden>
+    <div class="chat-head">
+      <div>
+        <strong>Nila</strong> <span class="muted">· AI assistant</span>
+        <div class="muted small" id="chatMode">agent</div>
+      </div>
+      <div class="chat-head-actions">
+        <label class="switch small"><input type="checkbox" id="traceToggle" checked> Show agent trace</label>
+        <button class="icon-btn" onclick="Chat.reset()" title="New conversation">↺</button>
+        <button class="icon-btn" onclick="Chat.toggle()" title="Close">✕</button>
+      </div>
+    </div>
+    <div id="chatBody" class="chat-body"></div>
+    <div class="chips" id="chips">
+      <button>Veg dishes under 150?</button>
+      <button>Where is order 1022?</button>
+      <button>Book a table for 4 tomorrow at 7 pm</button>
+      <button>What time do you open?</button>
+    </div>
+    <form id="chatForm" class="chat-input">
+      <input id="chatText" placeholder="Ask about menu, orders, bookings…" autocomplete="off">
+      <button class="btn primary" type="submit">Send</button>
+    </form>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
